@@ -11,8 +11,10 @@ import java.util.Scanner;
 
 public class MasterMenu {
     private static final Scanner in = new Scanner(System.in);
+    private static Boolean isClosed = false;
+
     public String selectMenu() {
-        String menu = "1. product\n" +
+        String menu = "\n1. product\n" +
                 "2. transaction\n" +
                 "3. report\n" +
                 "0. exit\n";
@@ -24,7 +26,7 @@ public class MasterMenu {
     }
 
     public void run() throws SQLException {
-        System.out.println("=== welcome ===\n");
+        System.out.println("=== welcome ===");
         startMenu();
     }
 
@@ -42,9 +44,8 @@ public class MasterMenu {
 
         String selectedMenu = selectMenu();
         String selectedSubMenu;
-        int isExit = 0;
 
-        while (isExit == 0) {
+        while (!isClosed) {
             try {
                 switch (selectedMenu) {
                     case "1":
@@ -53,7 +54,7 @@ public class MasterMenu {
 
                         if (selectedSubMenu.equalsIgnoreCase("0")) {
                             System.out.println("\n=== goodbye ===\n");
-                            isExit = 1;
+                            isClosed = true;
                             break;
                         }
 
@@ -64,28 +65,30 @@ public class MasterMenu {
 
                         startMenu();
                     case "3":
-                        System.out.println("\n=== report ===\n");
+                        System.out.println("\n=== report ===");
                         subMenuReport();
 
                         startMenu();
                     case "0":
-                        System.out.println("\n=== goodbye ===\n");
-                        isExit = 1;
+                        System.out.println("\n=== goodbye ===");
+                        isClosed = true;
                         break;
+                    default:
+                        System.err.println("invalid input\n");
+                        startMenu();
                 }
             } catch (Exception e) {
-                System.out.println("invalid input");
+                System.err.println("invalid input\n");
                 startMenu();
             }
         }
-
     }
 
     public String subMenuProduct() {
-        String menu =   "1. add a product\n" +
-                        "2. delete a product\n" +
-                        "3. detail product\n" +
-                        "0. exit\n";
+        String menu = "\n1. add a product\n" +
+                "2. delete a product\n" +
+                "3. detail product\n" +
+                "0. exit\n";
 
         System.out.println(menu);
 
@@ -97,6 +100,8 @@ public class MasterMenu {
         switch (selectedSubMenu) {
             case "1":
                 System.out.println("\n=== add a product ===\n");
+
+
                 break;
             case "2":
                 System.out.println("\n=== delete a product ===\n");
@@ -106,6 +111,9 @@ public class MasterMenu {
                 break;
             case "0":
                 break;
+            default:
+                System.err.println("invalid input\n");
+                subMenuProduct();
         }
 
         return selectedSubMenu;
