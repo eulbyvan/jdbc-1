@@ -5,30 +5,28 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public abstract class DataSourceFactory {
-    private static Connection conn = null;
-
+    private static Connection connection = null;
     private static void createConnection() throws SQLException {
         String dbHost = "localhost";
         String dbPort = "5432";
-        String dbName = "jdbc1";
         String dbUser = "postgres";
+        String dbName = "jdbc1";
         String dbPassword = "stupid";
-
         String dbUrl = String.format("jdbc:postgresql://%s:%s/%s", dbHost, dbPort, dbName);
 
-        conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        connection.setAutoCommit(false);
     }
 
-    public static Connection getConn() throws SQLException {
-        if (conn == null) createConnection();
-
-        return conn;
+    public static Connection getConnection() throws SQLException {
+        if (connection == null) createConnection();
+        return connection;
     }
 
-    public static void connClose() {
-        if (conn != null) {
+    public static void connectionClose() {
+        if (connection != null) {
             try {
-                conn.close();
+                connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

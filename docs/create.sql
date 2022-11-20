@@ -7,10 +7,10 @@ create table product (
 	primary key (id)
 );
 
-drop table if exists price;
+drop table if exists product_detail;
 create table product_detail (
 	id int generated always as identity,
-	product_id int,
+	product_id int unique,
 	price numeric(18,2),
 	description varchar(255),
 	primary key (id),

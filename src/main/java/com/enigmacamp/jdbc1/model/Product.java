@@ -5,8 +5,13 @@ public class Product {
     String name;
     Boolean isActive;
     Boolean isDeleted;
+    ProductDetail productDetail;
 
     public Product() {}
+
+    public Product(String name) {
+        this.name = name;
+    }
 
     public Product(Integer id, String name, Boolean isActive, Boolean isDeleted) {
         this.id = id;
