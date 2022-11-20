@@ -9,12 +9,25 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class MasterMenu {
+public abstract class MasterMenu {
     private static final Scanner in = new Scanner(System.in);
     private static Boolean isClosed = false;
+    private static final Connection connection;
 
-    public String selectMenu() {
-        String menu = "\n1. product\n" +
+    static {
+        try {
+            connection = DataSourceFactory.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final ProductRepo productRepo = new ProductRepo(connection);
+    private static final ProductService productService = new ProductService(productRepo);
+
+    private static String selectMenu() {
+        String menu = "\n=== main menu ===\n" +
+                "\n1. product\n" +
                 "2. transaction\n" +
                 "3. report\n" +
                 "0. exit\n";
@@ -25,18 +38,12 @@ public class MasterMenu {
         return in.nextLine();
     }
 
-    public void run() throws SQLException {
+    public static void run() throws SQLException {
         System.out.println("=== welcome ===");
         startMenu();
     }
 
-    public void startMenu() throws SQLException {
-
-        Connection connection = DataSourceFactory.getConnection();
-
-        ProductRepo productRepo = new ProductRepo(connection);
-        ProductService productService = new ProductService(productRepo);
-
+    private static void startMenu() throws SQLException {
 
         // test
 //        Product product1 = new Product(0,"test",true,false);
@@ -47,35 +54,46 @@ public class MasterMenu {
 
         while (!isClosed) {
             try {
-                switch (selectedMenu) {
-                    case "1":
-                        System.out.println("\n=== product ===\n");
-                        selectedSubMenu = subMenuProduct();
+                if (selectedMenu.equalsIgnoreCase("1")) {
+                    System.out.println("\n=== product ===");
+                    selectedSubMenu = subMenuProduct();
 
-                        if (selectedSubMenu.equalsIgnoreCase("0")) {
-                            System.out.println("\n=== goodbye ===\n");
-                            isClosed = true;
-                            break;
-                        }
-
-                        startMenu();
-                    case "2":
-                        System.out.println("\n=== transaction ===\n");
-                        subMenuTrx();
-
-                        startMenu();
-                    case "3":
-                        System.out.println("\n=== report ===");
-                        subMenuReport();
-
-                        startMenu();
-                    case "0":
+                    if (selectedSubMenu.equalsIgnoreCase("0")) {
                         System.out.println("\n=== goodbye ===");
                         isClosed = true;
                         break;
-                    default:
-                        System.err.println("invalid input\n");
-                        startMenu();
+                    }
+
+                    startMenu();
+                } else if (selectedMenu.equalsIgnoreCase("2")) {
+                    System.out.println("\n=== transaction ===");
+                    selectedSubMenu = subMenuTrx();
+
+                    if (selectedSubMenu.equalsIgnoreCase("0")) {
+                        System.out.println("\n=== goodbye ===");
+                        isClosed = true;
+                        break;
+                    }
+
+                    startMenu();
+                } else if (selectedMenu.equalsIgnoreCase("3")) {
+                    System.out.println("\n=== report ===");
+                    selectedSubMenu = subMenuReport();
+
+                    if (selectedSubMenu.equalsIgnoreCase("0")) {
+                        System.out.println("\n=== goodbye ===");
+                        isClosed = true;
+                        break;
+                    }
+
+                    startMenu();
+                } else if (selectedMenu.equalsIgnoreCase("0")) {
+                    System.out.println("\n=== goodbye ===");
+                    isClosed = true;
+                    break;
+                } else {
+                    System.err.println("invalid input\n");
+                    startMenu();
                 }
             } catch (Exception e) {
                 System.err.println("invalid input\n");
@@ -84,7 +102,7 @@ public class MasterMenu {
         }
     }
 
-    public String subMenuProduct() {
+    private static String subMenuProduct() {
         String menu = "\n1. add a product\n" +
                 "2. delete a product\n" +
                 "3. detail product\n" +
@@ -97,34 +115,32 @@ public class MasterMenu {
         String selectedSubMenu = in.nextLine();
 
 
-        switch (selectedSubMenu) {
-            case "1":
-                System.out.println("\n=== add a product ===\n");
+        if (!selectedSubMenu.equalsIgnoreCase("0")) {
+            if (selectedSubMenu.equalsIgnoreCase("1")) {
+                System.out.println("\n=== add a product ===");
 
-
-                break;
-            case "2":
-                System.out.println("\n=== delete a product ===\n");
-                break;
-            case "3":
-                System.out.println("\n=== report ===\n");
-                break;
-            case "0":
-                break;
-            default:
+                System.out.println("product added");
+                return selectedSubMenu;
+            } else if (selectedSubMenu.equalsIgnoreCase("2")) {
+                System.out.println("\n=== delete a product ===");
+                return selectedSubMenu;
+            } else if (selectedSubMenu.equalsIgnoreCase("3")) {
+                System.out.println("\n=== report ===");
+                return selectedSubMenu;
+            } else {
                 System.err.println("invalid input\n");
-                subMenuProduct();
+                return selectedSubMenu;
+            }
         }
 
         return selectedSubMenu;
-
     }
 
-    public void subMenuTrx() {
-
+    private static String subMenuTrx() {
+        return "0";
     }
 
-    public void subMenuReport() {
-
+    private static String subMenuReport() {
+        return "0";
     }
 }

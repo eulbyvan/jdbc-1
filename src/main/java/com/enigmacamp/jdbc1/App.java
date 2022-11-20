@@ -6,10 +6,8 @@ import java.sql.SQLException;
 
 public class App {
     public static void main(String[] args) {
-        MasterMenu masterMenu = new MasterMenu();
-
         try {
-            masterMenu.run();
+            MasterMenu.run();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
